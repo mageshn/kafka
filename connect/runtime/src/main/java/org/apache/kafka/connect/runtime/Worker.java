@@ -486,7 +486,7 @@ public class Worker {
                     internalKeyConverter, internalValueConverter);
             OffsetStorageWriter offsetWriter = new OffsetStorageWriter(offsetBackingStore, id.connector(),
                     internalKeyConverter, internalValueConverter);
-            Map<String, Object> producerProps = producerConfigs(connConfig);
+            Map<String, Object> producerProps = producerConfigs();
             KafkaProducer<byte[], byte[]> producer = new KafkaProducer<>(producerProps);
 
             // Note we pass the configState as it performs dynamic transformations under the covers
@@ -510,7 +510,7 @@ public class Worker {
         }
     }
 
-    Map<String, Object> producerConfigs(ConnectorConfig connConfig) {
+    Map<String, Object> producerConfigs() {
         Map<String, Object> producerProps = new HashMap<>();
         producerProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, Utils.join(config.getList(WorkerConfig.BOOTSTRAP_SERVERS_CONFIG), ","));
         producerProps.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.ByteArraySerializer");
@@ -558,7 +558,7 @@ public class Worker {
         // check if topic for dead letter queue exists
         String topic = connConfig.dlqTopicName();
         if (topic != null && !topic.isEmpty()) {
-            Map<String, Object> producerProps = producerConfigs(connConfig);
+            Map<String, Object> producerProps = producerConfigs();
             DeadLetterQueueReporter reporter = DeadLetterQueueReporter.createAndSetup(config, id, connConfig, producerProps, errorHandlingMetrics);
             reporters.add(reporter);
         }
